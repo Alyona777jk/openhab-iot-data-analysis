@@ -1,0 +1,22 @@
+// Групи
+Group gTemperature "Температура Кімнат"
+Group gHumidity "Вологість Кімнат"
+
+// Кімната 1 (LivingRoom)
+Number:Temperature Temp_LivingRoom "Температура (Вітальня) [%.1f °C]" <temperature> (gTemperature)
+Number:Dimensionless Hum_LivingRoom "Вологість (Вітальня) [%.1f %%]" <humidity> (gHumidity)
+
+// Кімната 2 (Bedroom)
+Number:Temperature Temp_Bedroom "Температура (Спальня) [%.1f °C]" <temperature> (gTemperature)
+Number:Dimensionless Hum_Bedroom "Вологість (Спальня) [%.1f %%]" <humidity> (gHumidity)
+
+// Кімната 3 (Kitchen)
+Number:Temperature Temp_Kitchen "Температура (Кухня) [%.1f °C]" <temperature> (gTemperature)
+Number:Dimensionless Hum_Kitchen "Вологість (Кухня) [%.1f %%]" <humidity> (gHumidity)
+
+// Агреговані та службові елементи
+Number:Temperature Temp_Avg "Середня температура [%.1f °C]" <temperature>
+Number:Temperature Temp_Min "Мінімальна температура [%.1f °C]" <temperature>
+Number:Temperature Temp_Max "Максимальна температура [%.1f °C]" <temperature>
+Number:Temperature Temp_Hourly_Avg "Середня за годину [%.1f °C]" <temperature>
+Switch Temp_Anomaly_Alert "Аномалія температури!" <warning>

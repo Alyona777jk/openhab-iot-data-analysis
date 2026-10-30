@@ -1,0 +1,60 @@
+rule "Симуляція випадкових даних датчиків"
+when
+    Time cron "0 * * * * ?"
+then
+    val java.util.Random rand = new java.util.Random()
+    
+    var double t1 = 20.0 + (10.0 * rand.nextDouble())
+    var double t2 = 20.0 + (10.0 * rand.nextDouble())
+    var double t3 = 20.0 + (10.0 * rand.nextDouble())
+
+    // Випадкова аномалія для Кухні (+6°C) з ймовірністю 15%
+    if (rand.nextInt(100) < 15) {
+        t3 = t3 + 6.0
+    }
+
+    Temp_LivingRoom.postUpdate(t1)
+    Temp_Bedroom.postUpdate(t2)
+    Temp_Kitchen.postUpdate(t3)
+
+    Hum_LivingRoom.postUpdate(40 + (20 * rand.nextDouble()))
+    Hum_Bedroom.postUpdate(40 + (20 * rand.nextDouble()))
+    Hum_Kitchen.postUpdate(40 + (20 * rand.nextDouble()))
+end
+
+rule "Обчислення Мін/Макс/Середнього та Детекція Аномалій"
+when
+    Item Temp_LivingRoom changed or
+    Item Temp_Bedroom changed or
+    Item Temp_Kitchen changed
+then
+    val t1 = (Temp_LivingRoom.state as Number).floatValue
+    val t2 = (Temp_Bedroom.state as Number).floatValue
+    val t3 = (Temp_Kitchen.state as Number).floatValue
+
+    val avg = (t1 + t2 + t3) / 3.0
+    val min = Math.min(t1, Math.min(t2, t3))
+    val max = Math.max(t1, Math.max(t2, t3))
+
+    Temp_Avg.postUpdate(avg)
+    Temp_Min.postUpdate(min)
+    Temp_Max.postUpdate(max)
+
+    // Перевірка аномалій (>5°C)
+    val prevT3 = Temp_Kitchen.previousState(true).state as Number
+    if (prevT3 !== null) {
+        val diff = Math.abs(t3 - prevT3.floatValue)
+        if (diff > 5.0) {
+            Temp_Anomaly_Alert.postUpdate(ON)
+            logWarn("IoT_Analytics", "ВИЯВЛЕНО АНОМАЛІЮ! Зміна температури на Кухні: " + diff + "°C")
+        } else {
+            Temp_Anomaly_Alert.postUpdate(OFF)
+        }
+    }
+
+    // Середня за годину з RRD4j
+    val hourlyAvg = Temp_Avg.averageSince(now.minusHours(1))
+    if (hourlyAvg !== null) {
+        Temp_Hourly_Avg.postUpdate(hourlyAvg)
+    }
+end

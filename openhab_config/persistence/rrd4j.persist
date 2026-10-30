@@ -1,0 +1,10 @@
+Strategies {
+    everyMinute : "0 * * * * ?"
+    default = everyChange
+}
+
+Items {
+    gTemperature* : strategy = everyChange, everyMinute
+    gHumidity*    : strategy = everyChange, everyMinute
+    Temp_Avg, Temp_Hourly_Avg : strategy = everyChange, everyMinute
+}

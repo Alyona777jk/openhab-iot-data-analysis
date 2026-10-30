@@ -1,0 +1,20 @@
+sitemap iot_dashboard label="Моніторинг IoT Даних" {
+    Frame label="Поточні показники" {
+        Text item=Temp_LivingRoom
+        Text item=Temp_Bedroom
+        Text item=Temp_Kitchen
+    }
+
+    Frame label="Аналітика та Агрегація" {
+        Text item=Temp_Avg
+        Text item=Temp_Min
+        Text item=Temp_Max
+        Text item=Temp_Hourly_Avg
+        Switch item=Temp_Anomaly_Alert mappings=[ON="Увага!", OFF="Норма"]
+    }
+
+    Frame label="Графіки температур (RRD4j)" {
+        Image refresh=60000 url="http://localhost:8080/chart?items=gTemperature&period=h&service=rrd4j" label="За останню годину"
+        Image refresh=300000 url="http://localhost:8080/chart?items=gTemperature&period=D&service=rrd4j" label="За добу"
+    }
+}
